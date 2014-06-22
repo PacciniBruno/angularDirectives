@@ -1,0 +1,361 @@
+<div class="container">
+<header class="clearfix co-header">
+    <img class="cb-logo-black pull-left" src="../../img/InstantCheckout/logoCleverCard.png">
+</header>
+
+
+<!-- Right section (has to reflow first, hence the pull-right -->
+<div class="col-xs-12 col-md-4 pull-right ng-hide fade-animation-show" ng-show="checkout.total">
+    <section class="container-fluid co-order-details">
+        <header class="">
+            <h2>Your order</h2>
+        </header>
+        <div class="co-details portrait">
+            <div class="co-thumb">
+                <img ng-src="{{checkout.itemImage}}" alt="Your keepsake card">
+            </div>
+            <div class="co-pricing">
+                <!--Receipt details-->
+                <div class="co-cst-table">
+                    <div class="co-order-line">
+                        <div class="text-left">Keepsake</div>
+                        <div class="text-right">{{currency}}{{checkout.itemPrice}}</div>
+                    </div>
+                    <div class="co-order-line">
+                        <div class="text-left">Stamp</div>
+                        <div class="text-right">* {{currency}}{{checkout.shipping}}</div>
+                    </div>
+                    <!--TOTAL PRICING in Shopping Cart-->
+                    <div class="co-order-line cb-row-tbBorder">
+                        <div class="text-left"><strong>Total</strong></div>
+                        <div class="text-right"><strong>{{currency}}{{checkout.total}}</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-info">
+            <p class="co-delivery-info">Estimated delivery: {{checkout.delivery}}</p>
+            <p class="co-info">* Prices based on current location</p>
+        </div>
+    </section>
+    <!-- Show when logged in ! -->
+    <div class="row co-required-legend ng-hide" ng-show="loggedIn">
+        <button class="btn btn-lg btn-primary btn-block co-place-order-btn" hm-tap="onSubmitOrder()">
+            Place order
+        </button>
+    </div>
+    <!-- End show when logged in ! -->
+</div>
+
+
+<!-- Left section -->
+<div class="col-xs-12 col-md-8" ng-class="mobileView ? 'mobile' : '' ">
+<!-- Part1 : Login / Sign in -->
+<section class="container-fluid co-main-section co-login-flow ng-hide fade-animation-show" ng-show="facebookCheckComplete && !loggedIn">
+    <header class="co-login-title ng-hide" ng-hide="showLoginForm">
+        <h3>New User</h3>
+    </header>
+    <header class="co-login-title ng-hide" ng-show="showLoginForm">
+        <h3>Returning User? Log In</h3>
+    </header>
+    <header class="co-login-title ng-hide" ng-show="forgotPassword && !showLoginForm">
+        <h3>Forgotten Password? Retrieve your password by supplying us your email address.</h3>
+    </header>
+    <div class="co-login-form">
+        <!-- Case New User -->
+
+        <div class="co-sign-in ng-hide fade-animation-show" ng-hide="showLoginForm || forgotPassword">
+            <div class="form-group">
+                <input type="text" class="form-control" instant-checkout-form placeholder="* First Name" ng-model="signUpForm.firstName">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" instant-checkout-form placeholder="* Surname" ng-model="signUpForm.lastName">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" instant-checkout-form placeholder="* Email" ng-model="signUpForm.email">
+                <div class="co-validate"></div>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" hm-tap="onRegisterEmailUser()">
+                Continue to payment
+            </button>
+        </div>
+        <!-- Case Returning User -->
+
+        <div class="co-login ng-hide fade-animation-show" ng-show="showLoginForm && !forgotPassword">
+            <div class="form-group">
+                <input type="email" ng-model="emailLoginInput.email" instant-checkout-form class="form-control" placeholder="* Email">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input type="password" ng-model="emailLoginInput.password" class="form-control" placeholder="* Password">
+                <div class="co-validate"></div>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" hm-tap="emailLogin()">
+                Continue to payment
+            </button>
+            <div class="co-bottom-link">
+                <div hm-tap="onForgotPasswordClick()" class="cb-link-secondary"><p class="text-left">I forgot my password</p></div>
+            </div>
+        </div>
+        <!-- Case Forgot Password -->
+        
+        <div class="co-login ng-hide fade-animation-show" ng-show="forgotPassword">
+            <div class="form-group">
+                <input type="email" ng-model="resetPassword.email" class="form-control" id="email3" placeholder="* Email">
+                <label class="pull-right" for="email3"></label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" hm-tap="emailPasswordRecovery()">
+                Reset Password
+            </button>
+            
+        </div>
+        
+        <div class="co-login-fb" ng-show="!forgotPassword">
+            <button class="btn btn-lg btn-block cb-login-button" hm-tap="fbLogin()">
+                Login with Facebook
+            </button>
+        </div>
+    </div>
+    <footer class="row co-returning">
+        <div class="cb-link-important" hm-tap="onReturningUserClick()" ><p class="text-center">Returning user ?</p></divn>
+    </footer>
+</section>
+
+<!-- Part2 : Checkout -->
+<section class="container-fluid co-main-section co-checkout-flow ng-hide fade-animation-show" ng-show="loggedIn">
+    <section class="co-address">
+        <header class="co-section-title">
+            <p ng-show="existingUser">Welcome bock Ailsa</p>
+            <h3>Enter the delivery address</h3>
+        </header>
+        <!-- address form -->
+
+        <div class="co-address-form">
+            <div class="form-group">
+                <input type="text" class="form-control" instant-checkout-form id="recipient" ng-model="address.name" placeholder="* {{address_form_name}}">
+                <div class="co-validate"></div>
+            </div>
+            <div class="checkbox ng-hide" ng-show="addressTemp">
+                <label>
+                    <input type="checkbox" class="" ng-model="fillAddress" ng-change="onFillMyAddress()">
+                    Fill fields with my address
+                </label>
+            </div>
+            <div class="form-group">
+                <div class="select-overlay">
+                    <select class="form-control " ng-model="address.country_code" ng-change="setPlaceholderText(); getShippingDetails()" ng-options="c.value as c.title for c in countries">
+                        <option value="">--- Choose Country ---</option>
+                    </select>
+                </div>
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input class="form-control " type="text" instant-checkout-form ng-model="address.address1" placeholder="* {{address_form_address_1}}">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input class="form-control " type="text" instant-checkout-form ng-model="address.address2" placeholder="* {{address_form_address_2}}">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input class="form-control " type="text" instant-checkout-form ng-model="address.city" placeholder="* {{address_form_city}}">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input class="form-control " type="text" instant-checkout-form ng-model="address.address3" placeholder="* {{address_form_address_3}}">
+                <div class="co-validate"></div>
+            </div>
+            <div class="form-group">
+                <input class="form-control " type="text" instant-checkout-form ng-model="address.postal_code" placeholder="* {{address_form_post_code}}">
+                <div class="co-validate"></div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="row co-payment">
+        <header class="co-section-title co-row-rewrapp">
+            <h3>Enter payment details</h3>
+        </header>
+
+        <!-- existing payment infos -->
+
+        <div class="co-new-credit ng-hide" ng-hide="existingCreditCard">
+            <ul class="co-payment-tabs nav nav-tabs">
+                <li class="co-payment-tab" ng-class="{active: cardPayment}">
+                    <a hm-tap="onPaymentMethodChoose(true)">
+                        <input type="radio" id="card-payment" name="payment-type" ng-model="cardPayment" ng-value="true">
+                        <label for="card-payment"> Credit/Debit card</label>
+                    </a>
+                </li>
+                <li class="co-payment-tab" ng-class="{active: !cardPayment}">
+                    <a hm-tap="onPaymentMethodChoose(false)">
+                        <input type="radio" id="paypal-payment" name="payment-type" ng-model="cardPayment" ng-value="false">
+                        <label for="paypal-payment"> Paypal <img class="co-card-icon" src="../../img/payments/paypal.png"></label>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Credit Card -->
+
+            <div class="co-tab-content co-row-rewrapp ng-hide" ng-hide="existingCreditCard" ng-show="cardPayment">
+                <section class="co-payment-form" ng-form="payment">
+                    <div class="form-group">
+                        <input class="form-control" 
+                               type="text" 
+                               name="name" 
+                               required 
+                               ng-model="cardDetails.name" 
+                               placeholder="* Card name"
+                               instant-checkout-form 
+                               co-info="Lorem" 
+                               co-img="iconCreditCardName.png">
+                        <div class="co-validate"></div>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" 
+                               type="text" 
+                               input-credit-card 
+                               input-number required 
+                               ng-model="cardDetails.number" 
+                               placeholder="* Card number" 
+                               instant-checkout-form 
+                               co-info="Lorem" 
+                               co-img="iconCreditCardNumber.png">
+                        <div class="co-validate"></div>
+                    </div>
+                    <div class="select-expiration form-inline form-group">
+                        <div class="select-overlay form-group">
+                            <select instant-checkout-form 
+                                    co-info="Lorem" 
+                                    co-img="iconCreditCardExpiry.png" 
+                                    co-insert-after=".select-expiration div:last-child" 
+                                    ng-model="cardDetails.expiryMonth" 
+                                    ng-change="" 
+                                    ng-options="months.value as months.title for months in ccMonths">
+                                <option value="">Month</option>
+                            </select>
+                        </div>
+                        <div class="select-overlay form-group">
+                            <select instant-checkout-form 
+                                    co-info="Lorem" 
+                                    co-img="iconCreditCardExpiry.png" 
+                                    co-insert-after=".select-expiration div:last-child" 
+                                    ng-model="cardDetails.expiryYear" 
+                                    ng-change="" 
+                                    ng-options="years.value as years.title for years in ccYears">
+                                <option value="">Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control"
+                                   type="number" name="cvc"
+                                   input-number
+                                   input-c-v-c
+                                   required
+                                   ng-model="cardDetails.cvc"
+                                   co-error="{{error}}"
+                                   placeholder="* CVC"
+                                   instant-checkout-form
+                                   co-info="Lorem"
+                                   co-img="iconCreditCardCVC.png"
+                                   co-insert-after=".select-expiration div:last-child">
+                            <!--<div class="co-validate" ng-show="payment.cvc.$dirty && payment.cvc.$invalid && !payment.cvc.$focused">CVC invalid</div>-->
+                            <div class="co-validate"></div>
+                        </div>
+                    </div>
+                </section>
+                <aside class="co-payment-info">
+                    <p>We accept the following cards:</p>
+                    <div class="co-accepted-cards">
+                        <img class="co-card-icon" src="../../img/payments/checkout_payment_american_express_icon.png">
+                        <img class="co-card-icon" src="../../img/payments/checkout_payment_american_express_icon.png">
+                        <img class="co-card-icon" src="../../img/payments/checkout_payment_master_card_icon.png">
+                        <img class="co-card-icon" src="../../img/payments/checkout_payment_visa_card_icon.png">
+                    </div>
+                    <div class="co-security-msg">
+                        <h5><strong>Your security is important to us!</strong></h5>
+                        <p>We use SSL and 129 bit encryption to make sure your data is secure</p>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Paypal -->
+
+            <div class="co-tab-content co-row-rewrapp ng-hide" ng-hide="cardPayment">
+                <section class="co-paypal-main">
+                    <p class="co-paypal-info">
+                        You will be redirected to PayPal to complete payment. You will have 20 minutes to complete your payment.
+                    </p>
+                </section>
+                <aside class="co-payment-info">
+                    <div class="co-security-msg">
+                        <h5><strong>Your security is important to us!</strong></h5>
+                        <p>We use SSL and 129 bit encryption to make sure your data is secure</p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- new payment infos -->
+
+        <div ng-show="existingCreditCard">
+            <div class="co-tab-content co-row-rewrapp">
+                <section class="co-payment-form form-inline">
+                    <div class="co-existing-card">
+                        <img class="co-card-icon" src="../../img/payments/checkout_payment_american_express_icon.png">
+                        <p class="co-existing-card-infos">xxxx xxxx xxxx 6600<br>10/2016 Ailsa Berkeley</p>
+                        <div class="form-group">
+                            <input class="form-control " type="number" input-number ng-model="address.city" placeholder="* CVC"
+                                   instant-checkout-form co-info="blabla" co-img="iconCreditCardCVC.png">
+                            <div class="co-validate"></div>
+                        </div>
+                    </div>
+                    <div class="co-different-card-link">
+                        <a href="#" class="cb-link-secondary">
+                            <p>
+                                <img class="co-credit-card-icon" src="../../img/InstantCheckout/iconCreditCardSm.png">
+                                <span>Pay with a different card</span>
+                            </p>
+                        </a>
+                    </div>
+                </section>
+                <aside class="co-payment-info">
+                    <div class="co-security-msg">
+                        <h5><strong>Your security is important to us!</strong></h5>
+                        <p>We use SSL and 129 bit encryption to make sure your data is secure</p>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <section class="co-place-order">
+        <button class="btn btn-lg btn-primary btn-block co-place-order-btn" hm-tap="onSubmitOrder()">
+            Place order
+        </button>
+        <!-- Don't show when paypal ! -->
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" class="" id="rememberDetails" checked>
+                Remember Details
+            </label>
+        </div>
+        <!-- End don't show when paypal ! -->
+    </section>
+</section>
+
+<div class="row co-required-legend co-row-rewrapp ng-hide" ng-show="facebookCheckComplete">
+    <p>* All fields marked with an asterisks are required</p>
+</div>
+</div>
+
+<div id="co-tooltip" class="ng-hide"><!-- class is the name of the field, vertically absolutely positions the tooltip for each field-->
+    <div class="co-text-container"></div>
+    <img class="co-image-container" src=""/>
+</div>
+
+</div>
+
