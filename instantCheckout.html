@@ -66,15 +66,26 @@
 
         <div class="co-sign-in ng-hide fade-animation-show" ng-hide="showLoginForm || forgotPassword">
             <div class="form-group">
-                <input type="text" class="form-control" instant-checkout-form placeholder="* First Name" ng-model="signUpForm.firstName">
+                <input type="text" class="form-control" 
+                       instant-checkout-form 
+                       placeholder="* First Name" 
+                       ng-model="signUpForm.firstName">
                 <div class="co-validate"></div>
             </div>
             <div class="form-group">
-                <input type="text" class="form-control" instant-checkout-form placeholder="* Surname" ng-model="signUpForm.lastName">
+                <input type="text" 
+                       class="form-control" 
+                       instant-checkout-form 
+                       placeholder="* Surname" 
+                       ng-model="signUpForm.lastName">
                 <div class="co-validate"></div>
             </div>
             <div class="form-group">
-                <input type="email" class="form-control" instant-checkout-form placeholder="* Email" ng-model="signUpForm.email">
+                <input type="email" 
+                       class="form-control" 
+                       instant-checkout-form 
+                       placeholder="* Email" 
+                       ng-model="signUpForm.email">
                 <div class="co-validate"></div>
             </div>
             <button class="btn btn-lg btn-primary btn-block" hm-tap="onRegisterEmailUser()">
@@ -85,18 +96,27 @@
 
         <div class="co-login ng-hide fade-animation-show" ng-show="showLoginForm && !forgotPassword">
             <div class="form-group">
-                <input type="email" ng-model="emailLoginInput.email" instant-checkout-form class="form-control" placeholder="* Email">
+                <input type="email" 
+                       ng-model="emailLoginInput.email" 
+                       instant-checkout-form 
+                       class="form-control" 
+                       placeholder="* Email">
                 <div class="co-validate"></div>
             </div>
             <div class="form-group">
-                <input type="password" ng-model="emailLoginInput.password" class="form-control" placeholder="* Password">
+                <input type="password" 
+                       ng-model="emailLoginInput.password" 
+                       class="form-control" 
+                       placeholder="* Password">
                 <div class="co-validate"></div>
             </div>
             <button class="btn btn-lg btn-primary btn-block" hm-tap="emailLogin()">
                 Continue to payment
             </button>
             <div class="co-bottom-link">
-                <div hm-tap="onForgotPasswordClick()" class="cb-link-secondary"><p class="text-left">I forgot my password</p></div>
+                <div hm-tap="onForgotPasswordClick()" class="cb-link-secondary">
+                  <p class="text-left">I forgot my password</p>
+              </div>
             </div>
         </div>
         <!-- Case Forgot Password -->
@@ -134,7 +154,12 @@
 
         <div class="co-address-form">
             <div class="form-group">
-                <input type="text" class="form-control" instant-checkout-form id="recipient" ng-model="address.name" placeholder="* {{address_form_name}}">
+                <input type="text" 
+                       class="form-control" 
+                       instant-checkout-form 
+                       id="recipient" 
+                       ng-model="address.name" 
+                       placeholder="* {{address_form_name}}">
                 <div class="co-validate"></div>
             </div>
             <div class="checkbox ng-hide" ng-show="addressTemp">
@@ -145,7 +170,10 @@
             </div>
             <div class="form-group">
                 <div class="select-overlay">
-                    <select class="form-control " ng-model="address.country_code" ng-change="setPlaceholderText(); getShippingDetails()" ng-options="c.value as c.title for c in countries">
+                    <select class="form-control " 
+                            ng-model="address.country_code" 
+                            ng-change="setPlaceholderText(); getShippingDetails()" 
+                            ng-options="c.value as c.title for c in countries">
                         <option value="">--- Choose Country ---</option>
                     </select>
                 </div>
